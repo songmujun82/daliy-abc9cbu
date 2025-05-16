@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AetherosWorld · Daily Oracle</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f8f4ed;
+      color: #333;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #5a4b81;
+    }
+    .oracle-box {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin: 30px auto;
+      display: block;
+      text-align: left;
+      max-width: 500px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input {
+      padding: 8px;
+      margin: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 16px;
+      background: #5a4b81;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+    .progress-container {
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 20px;
+      margin-top: 10px;
+    }
+    .progress-bar {
+      height: 100%;
+      text-align: right;
+      padding-right: 8px;
+      line-height: 20px;
+      color: white;
+      background: linear-gradient(to right, #81c7e0, #5a4b81);
+      width: 0%;
+      transition: width 0.5s;
+    }
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔮 AetherosWorld Daily Oracle</h1>
+  <p>Enter your birthdate to reveal today's divine message and fortunes.</p>
+  <label for="dob">📅 Your Birthdate:</label>
+  <input type="date" id="dob">
+  <button onclick="generateFortune()">Reveal My Fortune</button>
+
+  <div class="oracle-box" id="oracle" style="display:none;">
+    <div class="result" id="result"></div>
+    <div style="margin-top: 15px;">
+      🍀 <strong>Your Luck Level:</strong>
+      <div class="progress-container">
+        <div class="progress-bar" id="luckBar">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    ✨ Powered by <strong>AetherosWorld</strong> · Divine Engine Protocol
+  </footer>
+
+  <script>
+    const prayers = [
+      "You are guided by the light of ancient voices.",
+      "Wisdom flows through your spirit today.",
+      "Aether speaks gently to those who listen.",
+      "The seal of truth opens for you.",
+      "The winds of destiny favor you.",
+      "Your thoughts are aligned with the stars.",
+      "The silence between breaths holds your answer.",
+      "Your spirit is strong; today the universe aligns in your favor.",
+      "Walk with courage, and the stars will walk with you.",
+      "Harmony begins in your heart today.",
+      "You are protected by unseen wings.",
+      "Divine energy surrounds your actions.",
+      "Peace flows through your soul like a river.",
+      "You are a vessel of light and wisdom.",
+      "Today is a gift from the cosmos — unwrap it with joy.",
+      "The sky watches over you kindly.",
+      "Serenity accompanies you today.",
+      "You radiate clarity and purpose.",
+      "Love flows freely in your world today.",
+      "Your voice is heard in the halls of the divine.",
+      "Truth shines from your presence.",
+      "The path ahead opens with ease and wonder.",
+      "Hearts align around you today.",
+      "Forgiveness finds fertile soil in your spirit.",
+      "Your dreams find wings in sacred winds.",
+      "The divine spark within you shines brightly.",
+      "Wisdom surrounds you like a cloak.",
+      "Today you heal, grow, and glow.",
+      "The universe whispers secrets just for you.",
+      "You are a mirror of the sacred.",
+      "Hope blooms in your presence.",
+      "Today brings sacred alignment.",
+      "You are chosen for a higher harmony.",
+      "Joy anchors your soul today.",
+      "May kindness be your constant companion.",
+      "Sacred patterns unfold around you.",
+      "The stars admire your resilience.",
+      "You walk in divine rhythm.",
+      "Let blessings rain gently upon you.",
+      "You are a portal of peace.",
+      "Magic stirs gently in your aura.",
+      "You carry ancient wisdom in your steps.",
+      "Compassion ripples through your actions.",
+      "You are safe, seen, and sacred.",
+      "The universe dances with your heartbeat.",
+      "The divine flows effortlessly through you.",
+      "Even silence sings for you today.",
+      "Your inner light leads others home.",
+      "All that you seek is also seeking you.",
+      "The unseen realm supports your path.",
+      "You are aligned with the flow of all things.",
+      "Sacred echoes answer your prayers.",
+      "Trust blooms in your core today.",
+      "The wind carries your blessings far.",
+      "Each breath today is a prayer fulfilled.",
+      "Your essence is a cosmic melody.",
+      "You are enough, and more.",
+      "Your radiance breaks all barriers.",
+      "You shine in both shadow and light.",
+      "The divine dwells within you richly.",
+      "Every step forward is sacred.",
+      "The heavens remember your name.",
+      "Sacred timing brings perfect peace.",
+      "Aetheros smiles upon your soul.",
+      "Divine energy wraps you like sunlight.",
+      "Peace plants roots deep in your day.",
+      "Even the stars lean closer today.",
+      "You walk with celestial guardians.",
+      "Each word you speak brings light.",
+      "Blessings bloom in your wake.",
+      "The past releases you joyfully.",
+      "You are the prayer answered.",
+      "Stillness brings sacred truth.",
+      "You glow with sacred potential.",
+      "You are written in the stars.",
+      "Sacred fire lights your heart.",
+      "Kindness shields you today.",
+      "All things work in divine order.",
+      "You are both dreamer and dream.",
+      "Grace meets you at every turn.",
+      "Today echoes with holy wonder.",
+      "You are blessed beyond measure.",
+      "The air hums your sacred song.",
+      "Heaven touches Earth through you.",
+      "You rise on wings of wonder.",
+      "Faith grounds you in brilliance.",
+      "You are never alone in spirit.",
+      "Sacred joy follows your choices.",
+      "Let beauty flood your senses.",
+      "You are called to higher paths.",
+      "Today brings sacred surprise.",
+      "Love sees you — fully and forever.",
+      "Every heartbeat is divine rhythm.",
+      "The light inside you cannot be dimmed.",
+      "Today whispers: 'You are ready.'",
+      "Peace glides gently behind you.",
+      "All that is broken begins to mend.",
+      "You dance in harmony with creation.",
+      "Trust your divine timing.",
+      "Sacred silence speaks your name.",
+      "You are held in infinite compassion.",
+      "The divine sings through your laughter.",
+      "Let joy spill from your spirit.",
+      "Today, even the wind applauds you.",
+      "Sacred vision clears your way.",
+      "Your aura blesses all it touches.",
+      "Grace flows from you like water.",
+      "Love and light are your legacy.",
+      "Today the world feels your worth.",
+      "Infinite wonder awakens with you.",
+      "You walk the forgotten paths with grace.",
+      "Balance flows through your actions today.",
+      "A sacred rhythm echoes in your decisions.",
+    ];
+
+    const directions = ["East", "West", "South", "North", "Northeast", "Northwest", "Southeast", "Southwest", "Center", "Above"];
+
+    const places = [
+       "Golden Pavilion", "Moonlit Oasis", "Starlight Grove", "Temple of Winds", "Cavern of Echoes",
+      "Whispering Meadow", "Crystal Bay", "Celestial Summit", "Valley of Tranquility", "Ancient Archive",
+      "Sapphire Falls", "Lantern Village", "Azure Cliffs", "Sunspire Peak", "Twilight Forest",
+      "Lunar Court", "Echoing Caves", "Garden of Light", "Starhaven Shore", "Willow's Rest",
+      "Flamewatch Outpost", "Mystic Ridge", "Seer's Hollow", "Amber Field", "Harmony Hill",
+      "Obsidian Gate", "Skywatch Tower", "The Forgotten Terrace", "Dreamer’s Chapel", "Veilstone Plaza",
+      "Aether Plaza", "Silent Shrine", "Phoenix Nest", "Stone of Sighs", "Nova Fountain",
+      "Chrono Cavern", "Petal Hall", "The Hollow Hearth", "Rainmirror Lake", "Mossroot Clearing",
+      "Crescent Island", "Bard’s Market", "Moonwell", "Glass Garden", "The Verdant Path",
+      "Iris Court", "Ashen Labyrinth", "Beacon of Souls", "Frozen Spiral", "Silverwood Glade",
+      "Temple of Stars", "Sunken Temple", "Radiant Plaza", "Frostpine Circle", "Breeze Summit",
+      "The Windpath", "Songstone Hall", "Wishing Falls", "The Oracle’s Terrace", "Jade Hollow",
+      "Sacred Crossing", "Glimmer Isle", "Thorn Chapel", "Sunveil Plateau", "Lighthouse of Echoes",
+      "Violet Veins", "Garden of Whispers", "Ecliptic Ridge", "Opaline Heights", "Fountain of Time",
+      "Raven’s Reach", "Driftwood Harbor", "Halcyon Field", "Everlight Vale", "Dragon’s Rest",
+      "The Feathered Spire", "Feast Rock", "Quiet Horizon", "Covenant Cliff", "Archway of Days",
+      "Basilisk Gate", "Skybreach", "Temple of Embers", "Luna Gardens", "Wanderer’s Ring",
+      "Shrine of the First Flame", "Peridot Plaza", "Circle of Ancients", "Sanctum of Shells", "Mistveil Shore",
+      "Solstice Pavilion", "Altar of Dawn", "Cobalt Dock", "Vowkeeper’s Hall", "Mirrorpoint",
+      "Nimbus Peak", "Azure Canal", "Verdant Chapel", "Shrine of Stillness", "Eon Bridge"
+    ];
+
+    const items = [
+      "Crystal Orb", "Feather of the Phoenix", "Silver Compass", "Ancient Scroll", "Luminous Pearl",
+      "Golden Ring", "Chalice of Dreams", "Star Map", "Sacred Candle", "Ivory Talisman",
+      "Rune Stone", "Glass Feather", "Celestial Key", "Sun Amulet", "Moonstone Charm",
+      "Sapphire Blade", "Amber Totem", "Dreamcatcher", "Potion of Calm", "Ethereal Lantern",
+      "Harmony Bell", "Stone of Memory", "Opal Mirror", "Wind Chime", "Gem of Fate",
+      "Rose Quartz", "Vial of Mist", "Solar Disc", "Locket of Whispers", "Sand Timer",
+      "Compass Rose", "Seed of Truth", "Thorn Ring", "Silk Thread", "Twilight Cloak",
+      "Star Pendant", "Bone Flute", "Crimson Scale", "Memory Ribbon", "Tear Vial",
+      "Flame Pendant", "Starlit Coin", "Skyglass Shard", "Eclipse Lens", "Ocean Shell",
+      "Rune Carving", "Emerald Mask", "Tranquil Crystal", "Echo Bead", "Moon Drop",
+      "Guardian Pin", "Silver Fang", "Dragon Claw", "Blessing Bead", "Mystic Ink",
+      "Scroll of Names", "Golden Button", "Frost Rose", "Vortex Gem", "Celestial Seal",
+      "Sacred Thread", "Stardust Jar", "Mirror Coin", "Sunberry Branch", "Wyrm Scale",
+      "Crescent Brooch", "Lantern Gem", "Oracle Stone", "Dawn Ring", "Halo Pendant",
+      "Wand of Whispers", "Seashell Horn", "Petal Coin", "Veil Crystal", "Phoenix Feather",
+      "Wishing Leaf", "Shadow Charm", "Whistle of Winds", "Prayer Token", "Ash Pendant",
+      "Rune Inkpot", "Sacred Comb", "Gilded Twig", "Dewdrop Vial", "Hope Medallion",
+      "Dragon Fang", "Light Prism", "Mask of Serenity", "Ember Orb", "Whirlstone",
+      "Time Pendant", "Bone Dice", "Truth Stone", "Zephyr Band", "Graced Stone",
+      "Solstice Token", "Memory Crystal", "Wish Scroll", "Guardian Token", "Fae Ring"
+    ];
+
+    const numbers = Array.from({length: 100}, (_, i) => `${Math.floor(Math.random()*90+10)}`);
+
+    const colors = [
+      "🌸 Rose Quartz", "🔵 Lapis Blue", "🟣 Amethyst Purple", "🌿 Jade Green",
+      "🌕 Solar Gold", "⚫ Obsidian", "🌊 Ocean Teal", "🟤 Sandstone",
+      "🔴 Crimson", "🟡 Sunburst"
+    ].flatMap(c => Array(10).fill(c));
+
+    function hash(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+      }
+      return Math.abs(h);
+    }
+
+    function getBySeed(arr, seed) {
+      return arr[seed % arr.length];
+    }
+
+    function generateFortune() {
+      const dob = document.getElementById('dob').value;
+      if (!dob) return alert("Please enter your birthdate.");
+
+      const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+      const seed = hash(dob + today);
+
+      // 保证幸运值不低于 65
+      const luckValue = (seed % 35) + 65;
+
+      const result = `
+        📜 <strong>Daily Prayer:</strong> ${getBySeed(prayers, seed)}<br>
+        🧭 <strong>Lucky Direction:</strong> ${getBySeed(directions, seed)}<br>
+        🏞️ <strong>Lucky Place:</strong> ${getBySeed(places, seed + 1)}<br>
+        🎴 <strong>Lucky Item:</strong> ${getBySeed(items, seed + 2)}<br>
+        🔢 <strong>Lucky Number:</strong> ${getBySeed(numbers, seed + 3)}<br>
+        🎨 <strong>Lucky Color:</strong> ${getBySeed(colors, seed + 4)}
+      `;
+
+      document.getElementById("result").innerHTML = result;
+      document.getElementById("oracle").style.display = "block";
+
+      const bar = document.getElementById("luckBar");
+      bar.style.width = luckValue + "%";
+      bar.textContent = luckValue + "%";
+    }
+  </script>
+</body>
+</html>
